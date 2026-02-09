@@ -1,6 +1,6 @@
 from collections import UserDict
 
-from quart_socketio.typing._config import wrap_config
+from pulseio.typing._config import wrap_config
 
 type Any = any
 

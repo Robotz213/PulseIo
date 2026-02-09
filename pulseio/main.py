@@ -12,8 +12,8 @@ from socketio.exceptions import (
     ConnectionRefusedError as SocketIOConnectionRefusedError,
 )
 
-from quart_socketio.common.exceptions import QuartTypeError, raise_value_error
-from quart_socketio.core import Controller
+from pulseio.common.exceptions import QuartTypeError, raise_value_error
+from pulseio.core import Controller
 
 from .namespace import Namespace
 
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
     from werkzeug.datastructures.headers import Headers
 
-    from quart_socketio.typing import Function
+    from pulseio.typing import Function
 
 
 type Any = any

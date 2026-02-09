@@ -18,7 +18,7 @@ You can install this package using pip:
 
 ```py
 from quart import Quart, render_template
-from quart_socketio import SocketIO, emit
+from pulseio import SocketIO, emit
 
 app = Quart(__name__)
 app.config['SECRET_KEY'] = 'secret!'

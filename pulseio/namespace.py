@@ -8,15 +8,15 @@ from quart import Quart, request
 from socketio import AsyncNamespace as BaseNamespace
 from socketio import AsyncServer
 
-from quart_socketio.common.exceptions import QuartSocketioError
-from quart_socketio.main import SocketIOConnectionRefusedError
+from pulseio.common.exceptions import QuartSocketioError
+from pulseio.main import SocketIOConnectionRefusedError
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
     from flask.sessions import SessionMixin
 
-    from quart_socketio.typing import Function
+    from pulseio.typing import Function
 
     from . import SocketIO
 

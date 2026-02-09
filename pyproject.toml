@@ -1,10 +1,7 @@
 [project]
 name = "quart_socketio"
-version = "0.1.1.post5"
-authors = [
-    { name = "Nicholas Silva", email = "nicholas@robotz.dev" },
-    { name = "Miguel Grinberg", email = "miguel.grinberg@gmail.com" },
-]
+version = "0.0.1"
+authors = [{ name = "Nicholas Silva", email = "nicholas@robotz.dev" }]
 description = "Async Socket.IO integration for Quart applications"
 classifiers = [
     "Environment :: Web Environment",

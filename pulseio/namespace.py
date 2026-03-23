@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import traceback
 from asyncio import iscoroutinefunction
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
-from quart import Quart, request
+from quart import Quart, Request, request
 from socketio import AsyncNamespace as BaseNamespace
 from socketio import AsyncServer
 
@@ -16,31 +16,30 @@ if TYPE_CHECKING:
 
     from flask.sessions import SessionMixin
 
+    from pulseio import SocketIO
     from pulseio.typing import Function
 
-    from . import SocketIO
-
-type Any = any
+type Any = object
 
 
 class Namespace(BaseNamespace):
     def __init__(
         self,
         namespace: str | None = None,
-        socketio: SocketIO = None,
+        socketio: SocketIO | None = None,
     ) -> None:
         super().__init__(namespace)
-        self.socketio = socketio
+        self.socketio = cast("SocketIO", socketio)
 
     def is_asyncio_based(self) -> bool:
         """Check if the namespace is asyncio-based."""
         return True
 
-    async def make_request(self, **kwargs: Any) -> dict[str, Any]:
+    async def make_request(self, **kwargs: Any) -> Request:
         """Create a request dictionary for the namespace."""
         return await self.socketio.make_request(**kwargs)
 
-    async def make_websocket(self, **kwargs: Any) -> dict[str, Any]:
+    async def make_websocket(self, **kwargs: Any) -> Request:
         """Create a websocket dictionary for the namespace."""
         return await self.socketio.make_websocket(**kwargs)
 
@@ -162,7 +161,7 @@ class Namespace(BaseNamespace):
 
         self._set_server(socketio)
 
-    def emit(
+    async def emit(
         self,
         event: str,
         data: dict | None = None,
@@ -170,10 +169,10 @@ class Namespace(BaseNamespace):
         *,
         include_self: bool = True,
         namespace: str | None = None,
-        callback: Function = None,
+        callback: Function | None = None,
     ) -> None:
         """Emit a custom event to one or more connected clients."""
-        return self.socketio.emit(
+        return await self.socketio.emit(
             event=event,
             data=data,
             room=room,
@@ -182,17 +181,17 @@ class Namespace(BaseNamespace):
             callback=callback,
         )
 
-    def send(
+    async def send(
         self,
         data: dict,
         room: str | None = None,
         *,
         include_self: bool = True,
         namespace: str | None = None,
-        callback: Function = None,
+        callback: Function | None = None,
     ) -> None:
         """Send a message to one or more connected clients."""
-        return self.socketio.send(
+        return await self.socketio.send(
             data=data,
             room=room,
             include_self=include_self,
@@ -200,9 +199,13 @@ class Namespace(BaseNamespace):
             callback=callback,
         )
 
-    def close_room(self, room: str, namespace: str | None = None) -> None:
+    async def close_room(
+        self,
+        room: str,
+        namespace: str | None = None,
+    ) -> None:
         """Close a room."""
-        return self.socketio.close_room(
+        return await self.socketio.close_room(
             room=room,
             namespace=namespace or self.namespace,
         )
@@ -214,5 +217,8 @@ class Namespace(BaseNamespace):
             namespace=self.namespace,
         )
 
-    def get_handler[**P, T](self, event: str) -> Callable[P, T]:
-        return getattr(self, "on_" + (event or ""), None)
+    def get_handler[**P](self, event: str) -> Callable[P, None]:
+        return cast(
+            "Callable[P, None]",
+            getattr(self, "on_" + (event or ""), None),
+        )

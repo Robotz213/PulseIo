@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from pulseio import SocketIO
 
 
-type Any = any
+type Any = object
 
 
 async def emit(event: str, *args: Any, **kwargs: Any) -> None:

@@ -1,6 +1,6 @@
 [project]
 name = "pulseio"
-version = "0.0.1"
+version = "0.1.1"
 authors = [{ name = "Nicholas Silva", email = "nicholas@robotz.dev" }]
 description = "Async Socket.IO integration for Quart applications"
 classifiers = [
@@ -16,6 +16,7 @@ dependencies = [
     "python-socketio >= 5.12.0",
     "uvicorn>=0.34.3",
     "hypercorn>=0.18.0",
+    "websockets>=16.0",
 ]
 
 

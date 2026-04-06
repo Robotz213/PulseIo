@@ -5,7 +5,6 @@ from functools import wraps
 from inspect import iscoroutinefunction
 from typing import TYPE_CHECKING, ClassVar
 
-import socketio
 from quart import Quart, has_request_context
 from quart import websocket as request
 from socketio.exceptions import (
@@ -24,12 +23,26 @@ if TYPE_CHECKING:
 
     from pulseio.typing import Function
 
+    class reason:  # noqa: N801
+        """Disconnection reasons."""
 
-type Any = any
+        #: Server-initiated disconnection.
+        SERVER_DISCONNECT = "server disconnect"
+        #: Client-initiated disconnection.
+        CLIENT_DISCONNECT = "client disconnect"
+        #: Ping timeout.
+        PING_TIMEOUT = "ping timeout"
+        #: Transport close.
+        TRANSPORT_CLOSE = "transport close"
+        #: Transport error.
+        TRANSPORT_ERROR = "transport error"
+
+
+type Any = object
 
 
 class SocketIO(Controller):
-    reason: socketio.AsyncServer.reason = socketio.AsyncServer.reason
+    reason: type[reason] = reason
 
     enviroments: ClassVar[dict[str, dict[str, Any]]] = {}
 

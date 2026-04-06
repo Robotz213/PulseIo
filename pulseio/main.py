@@ -3,7 +3,7 @@ from __future__ import annotations
 import traceback
 from functools import wraps
 from inspect import iscoroutinefunction
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, ClassVar, cast
 
 from quart import Quart, has_request_context
 from quart import websocket as request
@@ -58,10 +58,10 @@ class SocketIO(Controller):
         method can be overridden if special dispatching rules are needed, or if
         having a single method that catches all events is desired.
         """
-        sid: str = args[2]
-        event: str = args[0] if len(args) > 1 and args[0] != "*" else sid
-        namespace: str = args[1] if len(args) > 2 and args[1] != "*" else sid
-        environ: dict[str, Any] = args[3] if len(args) > 3 else {}
+        sid = str(args[2])
+        event = str(args[0] if len(args) > 1 and args[0] != "*" else sid)
+        namespace = str(args[1] if len(args) > 2 and args[1] != "*" else sid)
+        environ = cast("dict[str, Any]", args[3] if len(args) > 3 else {})
 
         if event == "connect":
             self.enviroments[sid] = environ

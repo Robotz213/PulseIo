@@ -2,23 +2,22 @@ from __future__ import annotations
 
 import logging
 import platform
-from contextlib import suppress
 from logging.config import dictConfig
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Unpack
 
 from pulseio.common.exceptions import raise_value_error
 
 if TYPE_CHECKING:
     from uvicorn import Server
 
-    from .typing._config import RunKwargs
+    from .typing._config import Config
 
 ACCESS_FMT = (
     '%(levelprefix)s %(client_addr)s - "%(request_line)s" %(status_code)s'
 )
 
 
-def run_uvicorn(**kwargs: RunKwargs) -> Server:
+def run_uvicorn(**kwargs: Unpack[Config]) -> Server:
     """Run Uvicorn server with the given keyword arguments.
 
     This function is a wrapper around `uvicorn.run`
@@ -31,11 +30,11 @@ def run_uvicorn(**kwargs: RunKwargs) -> Server:
     if "app" not in kwargs:
         raise_value_error("The 'app' keyword argument must be provided.")
 
-    app = kwargs.pop("app")
-    log_config = kwargs.pop("log_config", None)
-    log_level = kwargs.pop("log_level", "info")
-    host = kwargs.pop("host", "0.0.0.0")  # noqa: S104
-    port = kwargs.pop("port", 7000)
+    app = kwargs["app"]
+    log_config = kwargs.get("log_config")
+    log_level = kwargs.get("log_level", "info")
+    host = kwargs.get("host", "0.0.0.0")  # noqa: S104
+    port = kwargs.get("port", 7000)
 
     if not log_config:
         log_config = {
@@ -106,6 +105,5 @@ def run_uvicorn(**kwargs: RunKwargs) -> Server:
         ws="websockets",
         interface="asgi3",
     )
-    server = uvicorn.Server(config)
-    with suppress(KeyboardInterrupt):
-        return server.run()
+
+    return uvicorn.Server(config)

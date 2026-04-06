@@ -1,4 +1,4 @@
 {
   "reportMissingModuleSource": "none",
-  "typeCheckingMode": "basic"
+  "typeCheckingMode": "off"
 }

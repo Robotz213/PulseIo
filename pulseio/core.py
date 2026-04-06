@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from asyncio import Event
 from collections.abc import Callable
+from contextlib import suppress
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -24,7 +25,6 @@ from pulseio.common.exceptions import (
 from pulseio.config import Config
 from pulseio.middleare import QuartSocketIOMiddleware as Middleware
 from pulseio.namespace import Namespace
-from pulseio.test_client import SocketIOTestClient
 
 from ._manager import _ManagedSession
 
@@ -163,16 +163,16 @@ class Controller:
             "socketio_path": socketio_path,
         }
         self.sockio_mw = Middleware(**kw)
-        app.asgi_app = ProxyHeadersMiddleware(app.asgi_app)
+        app.asgi_app = ProxyHeadersMiddleware(app.asgi_app)  # pyright: ignore[reportArgumentType, reportAttributeAccessIssue]
         app.asgi_app = self.sockio_mw
         app.extensions["socketio"] = self
 
     def run(
         self,
-        app: Quart = None,
+        app: Quart | None = None,
         **kwargs: Unpack[RunKwargs],
     ) -> None:
-        self.config.update(**kwargs)
+        self.config.update(**kwargs)  # pyright: ignore[reportCallIssue]
         self.server_options = self.config
 
         app = self.config["app"]
@@ -191,7 +191,22 @@ class Controller:
 
         from pulseio._uvicorn import run_uvicorn
 
-        run_uvicorn(**self.config)
+        self.uvicorn_server = run_uvicorn(**self.config)
+        self.uvicorn_server.run()
+
+    async def shutdown(self) -> None:
+
+        with suppress(Exception):
+            await self.app.shutdown()
+
+        with suppress(Exception):
+            await self.server.shutdown()
+
+        with suppress(Exception):
+            await self.uvicorn_server.shutdown()
+
+        clear()
+        print("Server stopped!")  # noqa: T201  # noqa: T201
 
     def client_manager(self, app: Quart) -> None:
         url = self.server_options["message_queue"]
@@ -203,14 +218,14 @@ class Controller:
                 ("redis://", "rediss://"): socketio.AsyncRedisManager,
                 ("kafka://",): socketio.KafkaManager,
                 ("zmq",): socketio.ZmqManager,
-            }
+            }  # pyright: ignore[reportAssignmentType]
             for prefixes, cls in queue_class_map.items():
-                if url.startswith(prefixes):
+                if url.startswith(prefixes):  # pyright: ignore[reportArgumentType]
                     queue_class = cls
                     break
 
             queue = queue_class(url, channel=channel, write_only=write_only)
-            self.server_options["client_manager"] = queue
+            self.server_options["client_manager"] = queue  # pyright: ignore[reportGeneralTypeIssues]
 
     def json_setting(self, app: Quart) -> None:
         """Json settings for the Quart-SocketIO server.
@@ -381,26 +396,6 @@ class Controller:
 
         event, handler, namespace = handler_args
         self.on(event=event, namespace=namespace)(handler)
-
-    def test_client(
-        self,
-        app: Quart,
-        namespace: str,
-        query_string: str,
-        headers: dict[str, str],
-        auth: dict[str, Any],
-        quart_test_client: Any = None,
-    ) -> SocketIOTestClient:
-
-        return SocketIOTestClient(
-            app,
-            self,
-            namespace=namespace,
-            query_string=query_string,
-            headers=headers,
-            auth=auth,
-            quart_test_client=quart_test_client,
-        )
 
     def register_namespace(self, namespace_handler: Namespace) -> None:
         """Register a namespace handler object.

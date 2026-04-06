@@ -2,7 +2,7 @@ from collections import UserDict
 
 from pulseio.typing._config import wrap_config
 
-type Any = any
+type Any = object
 
 
 @wrap_config

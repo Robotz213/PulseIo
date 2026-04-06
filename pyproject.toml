@@ -18,6 +18,7 @@ dependencies = [
     "uvicorn>=0.34.3",
     "hypercorn>=0.18.0",
     "websockets>=16.0",
+    "clear>=2.0.0",
 ]
 
 

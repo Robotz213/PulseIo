@@ -30,6 +30,12 @@ wheels = [
 ]
 
 [[package]]
+name = "clear"
+version = "2.0.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/17/a0/04e3f6a87245d75956bd254f7e133493ed6e18b49e09c874204cbfe97f42/clear-2.0.0.tar.gz", hash = "sha256:fd6d42575ed65063edef3c46e65aa1b3fc05a144dc1691ba62033ffc35f46368", size = 2130, upload-time = "2023-02-10T14:43:15.648Z" }
+
+[[package]]
 name = "click"
 version = "8.3.2"
 source = { registry = "https://pypi.org/simple" }
@@ -209,6 +215,7 @@ name = "pulseio"
 version = "0.1.1"
 source = { editable = "." }
 dependencies = [
+    { name = "clear" },
     { name = "hypercorn" },
     { name = "python-socketio" },
     { name = "quart" },
@@ -218,6 +225,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "clear", specifier = ">=2.0.0" },
     { name = "hypercorn", specifier = ">=0.18.0" },
     { name = "python-socketio", specifier = ">=5.12.0" },
     { name = "quart" },

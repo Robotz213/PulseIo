@@ -23,22 +23,23 @@ if TYPE_CHECKING:
 
     from pulseio.typing import Function
 
-    class reason:  # noqa: N801
-        """Disconnection reasons."""
-
-        #: Server-initiated disconnection.
-        SERVER_DISCONNECT = "server disconnect"
-        #: Client-initiated disconnection.
-        CLIENT_DISCONNECT = "client disconnect"
-        #: Ping timeout.
-        PING_TIMEOUT = "ping timeout"
-        #: Transport close.
-        TRANSPORT_CLOSE = "transport close"
-        #: Transport error.
-        TRANSPORT_ERROR = "transport error"
-
 
 type Any = object
+
+
+class reason:  # noqa: N801
+    """Disconnection reasons."""
+
+    #: Server-initiated disconnection.
+    SERVER_DISCONNECT = "server disconnect"
+    #: Client-initiated disconnection.
+    CLIENT_DISCONNECT = "client disconnect"
+    #: Ping timeout.
+    PING_TIMEOUT = "ping timeout"
+    #: Transport close.
+    TRANSPORT_CLOSE = "transport close"
+    #: Transport error.
+    TRANSPORT_ERROR = "transport error"
 
 
 class SocketIO(Controller):

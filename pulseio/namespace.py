@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import traceback
-from asyncio import iscoroutinefunction
+from inspect import iscoroutinefunction
 from typing import TYPE_CHECKING, cast
 
 from quart import Quart, Request, request
@@ -101,13 +101,17 @@ class Namespace(BaseNamespace):
         environ: dict[str, Any] | None = None,
         handler: Callable[P, T] | None = None,
     ) -> Any:
+
+        if not handler:
+            return None
+
         app: Quart = self.sockio_mw.quart_app
         if event == "disconnect":
             try:
                 if iscoroutinefunction(handler):
-                    return await handler(**data)
+                    return await handler(**data)  # pyright: ignore[reportCallIssue]
 
-                return handler(**data)
+                return handler(**data)  # pyright: ignore[reportCallIssue]
 
             except SocketIOConnectionRefusedError:
                 raise  # let this error bubble up to python-socketio
@@ -124,13 +128,14 @@ class Namespace(BaseNamespace):
         )
         async with app.request_context(request_ctx_sio):
             if not self.socketio.config["manage_session"]:
-                await self.handle_session(request.namespace)
+                nmspace = str(getattr(request, "namespace", None))
+                await self.socketio.handle_session(nmspace)
 
             try:
                 if iscoroutinefunction(handler):
-                    return await handler(**data)
+                    return await handler(**data)  # pyright: ignore[reportCallIssue]
 
-                return handler(**data)
+                return handler(**data)  # pyright: ignore[reportCallIssue]
 
             except SocketIOConnectionRefusedError:
                 raise  # let this error bubble up to python-socketio

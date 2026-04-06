@@ -121,7 +121,7 @@ class SocketIO(Controller):
         data: dict[str, Any],
         handler: Callable[P, T],
         environ: dict[str, Any] | None = None,
-    ) -> T:
+    ) -> Any:
         app: Quart = self.sockio_mw.quart_app
         if event == "disconnect":
             try:
@@ -135,7 +135,7 @@ class SocketIO(Controller):
             except Exception as e:  # noqa: BLE001
                 err_more = "".join(traceback.format_exception(e))
                 err = "".join(traceback.format_exception_only(e))
-                self.config["app"].error(err)
+                self.config["app"].logger.error(err)
                 return err
 
         request_ctx_sio = await self.make_request(

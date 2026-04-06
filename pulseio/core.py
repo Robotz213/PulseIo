@@ -13,6 +13,7 @@ from typing import (
 
 import quart
 import socketio
+from clear import clear
 from quart import Quart, Request, Websocket, session
 from quart import json as quart_json
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
